@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GestorCupons.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/GestorCupons/Cupons")]
 public class CuponsController : ControllerBase
 {
     private readonly ICupomService _cupomService;
@@ -15,7 +15,7 @@ public class CuponsController : ControllerBase
         _cupomService = cupomService;
     }
 
-    [HttpPost]
+    [HttpPost("criar-cupom")]
     public IActionResult CriarCupom([FromBody] CriarCupomRequest request)
     {
         try
@@ -27,5 +27,23 @@ public class CuponsController : ControllerBase
         {
             return BadRequest(new { erro = ex.Message });
         }
+    }
+    
+    [HttpGet("listar-cupons")]
+    public IActionResult ListarCupons()
+    {
+        var cupons = _cupomService.ListarCupons();
+        return Ok(cupons);
+    }
+
+    [HttpGet("obter-cupom/{id}")]
+    public IActionResult ObterPorId(int id)
+    {
+        var cupom = _cupomService.ObterPorId(id);
+
+        if (cupom is null)
+            return NotFound(new { erro = $"Cupom com ID {id} não encontrado." });
+
+        return Ok(cupom);
     }
 }
