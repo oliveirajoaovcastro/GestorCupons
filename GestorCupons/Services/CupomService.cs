@@ -60,4 +60,17 @@ public class CupomService : ICupomService
 
         return _cupomRepository.AdicionarCupom(novoCupom);
     }
+
+    public IReadOnlyList<Cupom> ListarCupons()
+    {
+        return _cupomRepository.ListarTodos();
+    }
+
+    public Cupom? ObterPorId(int id)
+    {
+        if (id <= 0)
+            return null;
+
+        return _cupomRepository.ObterPorId(id);
+    }
 }
