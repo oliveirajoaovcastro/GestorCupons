@@ -9,4 +9,5 @@ public interface ICupomRepository
     IReadOnlyList<Cupom> ListarTodos();
     public Cupom? ObterPorId(int id);
     void AtualizarCupom(Cupom cupom);
+    void DeletarCupom(Cupom cupom);
 }

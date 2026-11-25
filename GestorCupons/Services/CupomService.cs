@@ -91,6 +91,19 @@ public class CupomService : ICupomService
         return cupom;
     }
 
+    public bool DeletarCupom(int id)
+    {
+        if (id <= 0)
+            return false;
+
+        var cupom = _cupomRepository.ObterPorId(id);
+        if (cupom is null)
+            return false;
+
+        _cupomRepository.DeletarCupom(cupom);
+        return true;
+    }
+
     private static void ValidarDadosCupom(
         string codigo,
         int idAgencia,
