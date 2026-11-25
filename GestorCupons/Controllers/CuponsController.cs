@@ -46,4 +46,22 @@ public class CuponsController : ControllerBase
 
         return Ok(cupom);
     }
+
+    [HttpPut("atualizar-cupom/{id}")]
+    public IActionResult AtualizarCupom(int id, [FromBody] AtualizarCupomRequest request)
+    {
+        try
+        {
+            var cupom = _cupomService.AtualizarCupom(id, request);
+
+            if (cupom is null)
+                return NotFound(new { erro = $"Cupom com ID {id} não encontrado." });
+
+            return Ok(cupom);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { erro = ex.Message });
+        }
+    }
 }

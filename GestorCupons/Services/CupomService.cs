@@ -15,36 +15,19 @@ public class CupomService : ICupomService
 
     public Cupom CriarCupom(CriarCupomRequest request)
     {
-        var codigoLimpo = request.Codigo?.Trim().ToUpper() ?? string.Empty;
-        
-        if (string.IsNullOrWhiteSpace(codigoLimpo))
-        {
-            throw new ArgumentException("O código não pode ser nulo ou vazio.", nameof(codigoLimpo));
-        }
+        ValidarDadosCupom(
+            request.Codigo,
+            request.IdAgencia,
+            request.PercentualDesconto,
+            request.DataInicioVigencia,
+            request.DataFimVigencia
+        );
 
-        if (codigoLimpo.Length > 10)
-        {
-            throw new ArgumentException("O código não pode ter mais de 10 caracteres.", nameof(codigoLimpo));
-        }
+        var codigoLimpo = request.Codigo.Trim().ToUpperInvariant();
 
         if (_cupomRepository.ObterPorCodigo(codigoLimpo) is not null)
         {
-            throw new ArgumentException($"Já existe um cupom cadastrado com o código '{codigoLimpo}'.", nameof(codigoLimpo));
-        }
-        
-        if (request.IdAgencia == 0)
-        {
-            throw new ArgumentException("O ID da agência deve ser zero.", nameof(request.IdAgencia));
-        }
-
-        if (request.PercentualDesconto < 1 || request.PercentualDesconto > 100)
-        {
-            throw new ArgumentException("O percentual de desconto deve estar entre 1% e 100%.", nameof(request.PercentualDesconto));
-        }
-        
-        if (request.DataFimVigencia.HasValue && request.DataFimVigencia.Value.Date < request.DataInicioVigencia.Date)
-        {
-            throw new ArgumentException("A data de fim de vigência não pode ser anterior à data de início.", nameof(request.DataFimVigencia));
+            throw new ArgumentException($"Já existe um cupom cadastrado com o código '{codigoLimpo}'.");
         }
         
         var novoCupom = new Cupom
@@ -72,5 +55,62 @@ public class CupomService : ICupomService
             return null;
 
         return _cupomRepository.ObterPorId(id);
+    }
+
+    public Cupom? AtualizarCupom(int id, AtualizarCupomRequest request)
+    {
+        if (id <= 0)
+            return null;
+
+        var cupom = _cupomRepository.ObterPorId(id);
+        if (cupom is null)
+            return null;
+
+        ValidarDadosCupom(
+            request.Codigo,
+            request.IdAgencia,
+            request.PercentualDesconto,
+            request.DataInicioVigencia,
+            request.DataFimVigencia
+        );
+
+        var codigoLimpo = request.Codigo.Trim().ToUpperInvariant();
+        var cupomExistente = _cupomRepository.ObterPorCodigo(codigoLimpo);
+
+        if (cupomExistente is not null && cupomExistente.Id != id)
+            throw new ArgumentException($"Já existe outro cupom cadastrado com o código '{codigoLimpo}'.");
+
+        cupom.Codigo = codigoLimpo;
+        cupom.IdAgencia = request.IdAgencia;
+        cupom.PercentualDesconto = request.PercentualDesconto;
+        cupom.DataInicioVigencia = request.DataInicioVigencia;
+        cupom.DataFimVigencia = request.DataFimVigencia;
+
+        _cupomRepository.AtualizarCupom(cupom);
+
+        return cupom;
+    }
+
+    private static void ValidarDadosCupom(
+        string codigo,
+        int idAgencia,
+        int percentualDesconto,
+        DateTime dataInicioVigencia,
+        DateTime? dataFimVigencia)
+    {
+        if (string.IsNullOrWhiteSpace(codigo))
+            throw new ArgumentException("O código do cupom é obrigatório.");
+
+        if (codigo.Trim().Length > 10)
+            throw new ArgumentException("O código do cupom deve ter no máximo 10 caracteres.");
+
+        if (idAgencia <= 0)
+            throw new ArgumentException("O ID da agência deve ser maior que zero.");
+
+        if (percentualDesconto < 1 || percentualDesconto > 100)
+            throw new ArgumentException("O percentual de desconto deve estar entre 1% e 100%.");
+
+        if (dataFimVigencia.HasValue && dataFimVigencia.Value < dataInicioVigencia)
+            throw new ArgumentException("A data de fim da vigência deve ser posterior à data de início.");
     }
 }

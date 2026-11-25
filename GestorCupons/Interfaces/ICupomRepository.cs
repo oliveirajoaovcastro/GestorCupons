@@ -8,4 +8,5 @@ public interface ICupomRepository
     Cupom? ObterPorCodigo(string codigo);
     IReadOnlyList<Cupom> ListarTodos();
     public Cupom? ObterPorId(int id);
+    void AtualizarCupom(Cupom cupom);
 }
