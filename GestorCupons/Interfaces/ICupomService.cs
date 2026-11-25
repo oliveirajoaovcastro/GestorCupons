@@ -8,4 +8,5 @@ public interface ICupomService
     Cupom CriarCupom(CriarCupomRequest request);
     IReadOnlyList<Cupom> ListarCupons();
     Cupom? ObterPorId(int id);
+    Cupom? AtualizarCupom(int id, AtualizarCupomRequest request);
 }

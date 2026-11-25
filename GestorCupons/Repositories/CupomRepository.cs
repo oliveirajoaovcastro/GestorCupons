@@ -52,4 +52,13 @@ public class CupomRepository : ICupomRepository
 
         return null;
     }
+
+    public void AtualizarCupom(Cupom cupom)
+    {
+        var index = _cupons.FindIndex(c => c.Id == cupom.Id);
+        if (index != -1)
+        {
+            _cupons[index] = cupom;
+        }
+    }
 }
