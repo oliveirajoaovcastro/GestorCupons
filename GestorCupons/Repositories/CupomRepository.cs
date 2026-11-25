@@ -61,4 +61,9 @@ public class CupomRepository : ICupomRepository
             _cupons[index] = cupom;
         }
     }
+
+    public void DeletarCupom(Cupom cupom)
+    {
+        _cupons.Remove(cupom);
+    }
 }

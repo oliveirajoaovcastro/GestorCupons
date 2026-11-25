@@ -9,4 +9,5 @@ public interface ICupomService
     IReadOnlyList<Cupom> ListarCupons();
     Cupom? ObterPorId(int id);
     Cupom? AtualizarCupom(int id, AtualizarCupomRequest request);
+    bool DeletarCupom(int id);
 }

@@ -64,4 +64,15 @@ public class CuponsController : ControllerBase
             return BadRequest(new { erro = ex.Message });
         }
     }
+
+    [HttpDelete("deletar-cupom/{id}")]
+    public IActionResult DeletarCupom(int id)
+    {
+        var deletado = _cupomService.DeletarCupom(id);
+
+        if (!deletado)
+            return NotFound(new { erro = $"Cupom com ID {id} não encontrado." });
+
+        return NoContent();
+    }
 }
